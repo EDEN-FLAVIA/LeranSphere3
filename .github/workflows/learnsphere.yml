@@ -1,52 +1,48 @@
-name: LearnSphere CI
+name: Deploy LearnSphere to GitHub Pages
 
 on:
   push:
     branches:
       - main
-      - homepage
-      - coursepage
-      - course_detailspage
-      - featurespage
 
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Validate Project
+  build:
+    name: Prepare LearnSphere
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate courses.json
-        run: |
-          python -m json.tool data/courses.json > /dev/null
-          echo "courses.json is valid."
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Upload LearnSphere files
+        uses: actions/upload-pages-artifact@v3
         with:
-          node-version: 20
+          path: .
 
-      - name: Check JavaScript
-        run: |
-          node --check js/courses.js
-          node --check js/details.js
+  deploy:
+    name: Deploy LearnSphere
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
-          echo "JavaScript syntax is valid."
+    runs-on: ubuntu-latest
+    needs: build
 
-      - name: Check main project files
-        run: |
-          test -f index.html
-          test -f courses.html
-          test -f course-details.html
-
-          echo "Main HTML files are present."
-
-      - name: Validation successful
-        run: |
-          echo "LearnSphere validation completed successfully."
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
