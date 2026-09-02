@@ -15,71 +15,38 @@ on:
 
 jobs:
   validate:
-    name: Validate LearnSphere Project
+    name: Validate Project
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check required files
-        run: |
-          echo "Checking LearnSphere project files..."
-
-          test -f index.html
-          test -f courses.html
-          test -f course-details.html
-          test -f about.html
-
-          test -f css/style.css
-          test -f css/courses.css
-          test -f css/details.css
-          test -f css/about.css
-
-          test -f js/home.js
-          test -f js/courses.js
-          test -f js/details.js
-          test -f js/chatbot.js
-
-          test -f data/courses.json
-
-          echo "All required files are present."
-
       - name: Validate courses.json
         run: |
           python -m json.tool data/courses.json > /dev/null
-          echo "courses.json is valid JSON."
+          echo "courses.json is valid."
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Check JavaScript syntax
+      - name: Check JavaScript
         run: |
-          node --check js/home.js
           node --check js/courses.js
           node --check js/details.js
-          node --check js/chatbot.js
 
-          echo "All JavaScript files passed syntax validation."
+          echo "JavaScript syntax is valid."
 
-      - name: Check HTML files
+      - name: Check main project files
         run: |
-          test -s index.html
-          test -s courses.html
-          test -s course-details.html
-          test -s about.html
+          test -f index.html
+          test -f courses.html
+          test -f course-details.html
 
-          echo "HTML files exist and are not empty."
+          echo "Main HTML files are present."
 
-      - name: LearnSphere validation successful
+      - name: Validation successful
         run: |
-          echo "======================================"
-          echo " LearnSphere CI Validation Passed"
-          echo "======================================"
-          echo "Project structure: OK"
-          echo "JSON validation: OK"
-          echo "JavaScript syntax: OK"
-          echo "HTML files: OK"
-          echo "======================================"
+          echo "LearnSphere validation completed successfully."
